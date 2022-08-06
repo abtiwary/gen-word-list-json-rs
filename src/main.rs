@@ -34,6 +34,7 @@ fn main() -> Result<()> {
     let output_dir = matches.value_of("output-dir").context("require a path to an output directory")?;
     println!("{:?}", &input_file);
     println!("{:?}", &output_dir);
+    
     //let input_file = "/Users/abtiwary/temp/frequency-alpha-alldicts.txt.gz";
     //let output_dir = "/Users/abtiwary/temp/words";
 
@@ -63,7 +64,6 @@ fn main() -> Result<()> {
         if !m.contains_key(&k) {
             m.insert(k.clone(), Vec::new());
         }
-
         m.get_mut(&k).unwrap().push(v);
     };
 
@@ -81,8 +81,19 @@ fn main() -> Result<()> {
                                             .filter(|w| *w != " ")
                                             .collect_vec();
                 
+                let mut total_uppercase_chars = 0;
+                words[1].chars().into_iter().for_each(|c| {
+                    if c.is_uppercase() {
+                        total_uppercase_chars += 1;
+                    }
+                });
+
+                if total_uppercase_chars > 0 {
+                    continue;
+                }
+
                 // sort the word alphabetically to form a key
-                let sorted = words[1].chars().sorted().collect::<String>();
+                let sorted = words[1].to_lowercase().chars().sorted().collect::<String>();
                 let temp_word_data = WordData{
                     word: words[1].to_string(),
                     count: words[2].to_string(),
@@ -102,6 +113,8 @@ fn main() -> Result<()> {
                 eprintln!("error on line {}: {:?}", line_num, error);
             }
         }
+
+        line_num += 1;
     }
 
     let out_str_four = serde_json::to_string(&four_letter_words).context("expect marshaling of four letter words to JSON")?;
