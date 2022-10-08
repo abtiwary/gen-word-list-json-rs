@@ -100,6 +100,19 @@ fn main() -> Result<()> {
                     percent: words[3].to_string()
                 };
 
+                let count_as_integer = temp_word_data.count.replace(",", "").parse::<i64>();
+                match count_as_integer {
+                    Ok(count_as_integer_i64) => {
+                        //println!("count_as_integer_i64: {count_as_integer_i64}");
+                        if count_as_integer_i64 < 500_000 {
+                            continue;
+                        }
+                    },
+                    Err(error) => {
+                        continue;
+                    }
+                }
+                
                 match words[1].len() {
                     4 => map_updater(&mut four_letter_words, sorted.clone(), temp_word_data),
                     5 => map_updater(&mut five_letter_words, sorted.clone(), temp_word_data),
